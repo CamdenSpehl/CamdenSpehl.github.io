@@ -1,41 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>Yjs Monaco Example</title>
-    <style>
-        #monaco-editor {
-            width:100%;
-            height:600px;
-            border:1px solid #ccc;
-        }
-        .yRemoteSelection {
-            background-color: rgb(250, 129, 0, .5)
-        }
-        .yRemoteSelectionHead {
-            position: absolute;
-            border-left: orange solid 2px;
-            border-top: orange solid 2px;
-            border-bottom: orange solid 2px;
-            height: 100%;
-            box-sizing: border-box;
-        }
-        .yRemoteSelectionHead::after {
-            position: absolute;
-            content: ' ';
-            border: 3px solid orange;
-            border-radius: 4px;
-            left: -4px;
-            top: -5px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureNews</title>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-  <button type="button" id="y-connect-btn">Disconnect</button>
-  <p></p>
-  <p>This is a demo of the <a href="https://github.com/yjs/yjs">Yjs</a> ⇔ <a href="https://microsoft.github.io/monaco-editor/">Monaco</a> binding: <a href="https://github.com/yjs/y-monaco">y-monaco</a>.</p>
-  <p>The content of this editor is shared with every client that visits this domain.</p>
-  <div id="monaco-editor" />
-  <script type="text/javascript" src="/dist/monaco.bundle.js"></script>
+    <div id="status-message" class="status-message"></div>
+
+    <div id="home-page" class="page active">
+        <nav class="navbar">
+            <div class="logo">SecureNews</div>
+            <div class="search-container">
+                <span class="icon search-icon" data-icon="search"></span>
+                <input type="text" class="search-bar" placeholder="Search stories...">
+            </div>
+            <span class="icon" data-icon="user"></span>
+        </nav>
+        <div class="feed" id="feed"></div>
+    </div>
+
+    <div id="messages-page" class="page">
+        <nav class="navbar">
+            <div class="logo">Messages</div>
+            <div class="search-container">
+                <span class="icon search-icon" data-icon="search"></span>
+                <input type="text" class="search-bar" placeholder="Search messages...">
+            </div>
+        </nav>
+        <div class="chat-list" id="chat-list"></div>
+    </div>
+
+    <div id="create-page" class="page">
+        <nav class="navbar">
+            <div class="logo">Create Story</div>
+            <button class="action-button" onclick="publishStory()">
+                <span class="icon" data-icon="send"></span>
+                Publish
+            </button>
+        </nav>
+        <div class="create-page">
+            <div class="image-upload" onclick="triggerImageUpload()">
+                <span class="icon large" data-icon="image-plus"></span>
+                <p>Upload Cover Image</p>
+                <input type="file" id="image-upload" hidden accept="image/*">
+            </div>
+            <textarea id="story-content" placeholder="Write your story..."></textarea>
+            <div class="toggle-container">
+                <span>Post Anonymously</span>
+                <label class="toggle">
+                    <input type="checkbox" checked id="anonymous-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <span>Opinion Piece</span>
+                <label class="toggle">
+                    <input type="checkbox" id="opinion-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <span>Breaking News</span>
+                <label class="toggle">
+                    <input type="checkbox" id="breaking-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-button active" onclick="showPage('home-page')">
+            <span class="icon" data-icon="home"></span>
+            <span>Home</span>
+        </button>
+        <button class="nav-button" onclick="showPage('messages-page')">
+            <span class="icon" data-icon="message"></span>
+            <span>Messages</span>
+        </button>
+        <button class="nav-button" onclick="showPage('create-page')">
+            <span class="icon" data-icon="plus"></span>
+            <span>Create</span>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
