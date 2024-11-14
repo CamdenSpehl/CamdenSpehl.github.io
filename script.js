@@ -13,7 +13,13 @@ const ICONS = {
     share: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>',
     send: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>',
     zap: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-    more: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>'
+    more: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>',
+    'shield-check': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>',
+    'eye': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+    'eye-off': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>',
+    'log-out': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>',
+    'flag': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+    'alert-triangle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
 };
 
 // Initialize state
@@ -46,6 +52,13 @@ let state = {
         { name: 'Jane Doe', preview: 'Another message preview...', timestamp: new Date() },
         { name: 'Anonymous User', preview: 'Encrypted message...', timestamp: new Date() }
     ]
+};
+
+state.user = {
+    name: 'Anonymous User',
+    sessionToken: 'sess_' + Math.random().toString(36).substr(2, 9),
+    accountToken: 'acc_' + Math.random().toString(36).substr(2, 9),
+    isTokenVisible: false
 };
 
 // Handle icon initialization
@@ -97,6 +110,149 @@ function getPostTypeIcon(type) {
     }
 }
 
+function initializeProfile() {
+    // Set initial values
+    document.getElementById('display-name').value = state.user.name;
+    document.getElementById('session-token').value = state.user.sessionToken;
+    document.getElementById('account-token').value = state.user.accountToken;
+    
+    // Initialize icons
+    document.querySelectorAll('.eye-button').forEach(button => {
+        button.innerHTML = ICONS['eye-off'];
+    });
+    
+    const signOutButton = document.querySelector('.sign-out-button');
+    signOutButton.innerHTML = `${ICONS['log-out']} Sign Out`;
+}
+
+function toggleTokenVisibility(elementId) {
+    const input = document.getElementById(elementId);
+    const button = input.nextElementSibling;
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.innerHTML = ICONS.eye;
+    } else {
+        input.type = 'password';
+        button.innerHTML = ICONS['eye-off'];
+    }
+}
+
+function addSourceLink() {
+    const sourceLinks = document.getElementById('source-links');
+    const newLink = document.createElement('div');
+    newLink.className = 'source-link';
+    newLink.innerHTML = `
+        <input type="url" placeholder="Enter URL to contradicting evidence">
+        <button onclick="this.parentElement.remove()" title="Remove source">
+            Remove
+        </button>
+    `;
+    sourceLinks.appendChild(newLink);
+}
+
+function submitReport() {
+    const postIndex = document.getElementById('report-modal').getAttribute('data-post-index');
+    const links = Array.from(document.querySelectorAll('.source-link input')).map(input => input.value);
+    const details = document.getElementById('report-details').value;
+    
+    if (!links[0] && !details) {
+        showMessage('Please provide at least one source or explanation', true);
+        return;
+    }
+    
+    // In a real app, this would send to a backend
+    console.log('Report submitted:', {
+        postIndex,
+        links: links.filter(Boolean),
+        details
+    });
+    
+    showMessage('Report submitted for review. Thank you for helping maintain accuracy!');
+    closeReportModal();
+}
+
+function closeReportModal() {
+    const modal = document.getElementById('report-modal');
+    modal.style.display = 'none';
+    
+    // Reset form
+    document.getElementById('source-links').innerHTML = `
+        <div class="source-link">
+            <input type="url" placeholder="Enter URL to contradicting evidence">
+            <button onclick="this.parentElement.remove()" title="Remove source">
+                Remove
+            </button>
+        </div>
+    `;
+    document.getElementById('report-details').value = '';
+}
+
+function reportPost(postIndex) {
+    const modal = document.getElementById('report-modal');
+    modal.style.display = 'flex';
+    modal.setAttribute('data-post-index', postIndex);
+    document.getElementById('source-links').innerHTML = `
+        <div class="source-link">
+            <input type="url" placeholder="Enter URL to contradicting evidence">
+        </div>
+    `;
+}
+
+function addSourceLink() {
+    const sourceLinks = document.getElementById('source-links');
+    const newLink = document.createElement('div');
+    newLink.className = 'source-link';
+    newLink.innerHTML = `
+        <input type="url" placeholder="Enter URL to contradicting evidence">
+        <button onclick="this.parentElement.remove()">Remove</button>
+    `;
+    sourceLinks.appendChild(newLink);
+}
+
+function submitReport() {
+    const postIndex = document.getElementById('report-modal').getAttribute('data-post-index');
+    const links = Array.from(document.querySelectorAll('.source-link input')).map(input => input.value);
+    const details = document.getElementById('report-details').value;
+    
+    // In a real app, this would send to a backend
+    console.log('Report submitted:', {
+        postIndex,
+        links: links.filter(Boolean),
+        details
+    });
+    
+    showMessage('Report submitted for review. Thank you for helping maintain accuracy!');
+    closeReportModal();
+}
+
+function closeReportModal() {
+    document.getElementById('report-modal').style.display = 'none';
+}
+
+function toggleTokenVisibility(elementId) {
+    const input = document.getElementById(elementId);
+    const button = input.nextElementSibling;
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.innerHTML = ICONS.eye;
+    } else {
+        input.type = 'password';
+        button.innerHTML = ICONS['eye-off'];
+    }
+}
+
+function updateDisplayName() {
+    const input = document.getElementById('display-name');
+    state.user.name = input.value || 'Anonymous User';
+    showMessage('Display name updated!');
+}
+
+function signOut() {
+    showMessage('Signed out successfully!');
+    // In a real app, this would clear session data and redirect to login
+}
+
 function renderPosts(postsToRender = state.posts) {
     const feed = document.getElementById('feed');
     
@@ -115,8 +271,8 @@ function renderPosts(postsToRender = state.posts) {
                         ${getPostTypeIcon(post.type)}
                         ${post.type} • ${post.author}
                     </div>
-                    <button class="action-button">
-                        ${ICONS.more}
+                    <button class="action-button report-button" onclick="reportPost(${index})" title="Report Misinformation">
+                        ${ICONS['alert-triangle']}
                     </button>
                 </div>
                 ${post.imageUrl ? `
@@ -334,4 +490,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set up image upload listener
     document.getElementById('image-upload').addEventListener('change', handleImageUpload);
+
+    // Initialize profile page
+    initializeProfile();
+    
+    const userIcon = document.querySelector('[data-icon="user"]');
+    userIcon.style.cursor = 'pointer';
+    userIcon.addEventListener('click', () => {
+        showPage('profile-page');
+        initializeProfile(); // Reinitialize when showing the profile page
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('report-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeReportModal();
+        }
+    });
 });

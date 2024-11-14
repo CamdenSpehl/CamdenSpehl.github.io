@@ -71,6 +71,72 @@
         </div>
     </div>
 
+    <div id="report-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Report Misinformation</h2>
+            <p>Help maintain accuracy by providing evidence that contradicts this story</p>
+            
+            <div class="source-links" id="source-links">
+                <div class="source-link">
+                    <input type="url" placeholder="Enter URL to contradicting evidence">
+                    <button onclick="this.parentElement.remove()" title="Remove source">
+                        Remove
+                    </button>
+                </div>
+            </div>
+            
+            <button class="add-source-button" onclick="addSourceLink()">
+                <span data-icon="plus"></span>
+                Add Another Source
+            </button>
+            
+            <textarea 
+                id="report-details" 
+                class="report-details"
+                placeholder="Please provide additional context about why you believe this is misinformation..."></textarea>
+            
+            <div class="modal-actions">
+                <button class="modal-button cancel" onclick="closeReportModal()">Cancel</button>
+                <button class="modal-button submit" onclick="submitReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="profile-page" class="page">
+        <div class="navbar">
+            <div class="logo">Profile</div>
+        </div>
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2>Account Information</h2>
+                <div class="profile-field">
+                    <label>Display Name</label>
+                    <div class="token-container">
+                        <input type="text" id="display-name" placeholder="Anonymous User">
+                        <button onclick="updateDisplayName()">Update</button>
+                    </div>
+                </div>
+                <div class="profile-field">
+                    <label>Session Token</label>
+                    <div class="token-container">
+                        <input type="password" id="session-token" readonly>
+                        <button onclick="toggleTokenVisibility('session-token')" class="eye-button" data-icon="eye-off"></button>
+                    </div>
+                </div>
+                <div class="profile-field">
+                    <label>Account Token</label>
+                    <div class="token-container">
+                        <input type="password" id="account-token" readonly>
+                        <button onclick="toggleTokenVisibility('account-token')" class="eye-button" data-icon="eye-off"></button>
+                    </div>
+                </div>
+                <button onclick="signOut()" class="sign-out-button" data-icon="log-out">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="bottom-nav">
         <button class="nav-button active" onclick="showPage('home-page')">
             <span class="icon" data-icon="home"></span>
