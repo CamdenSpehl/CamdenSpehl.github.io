@@ -27,10 +27,13 @@ let state = {
     posts: [
         {
             id: 1,
+            title: 'Latest Developments in Technology',
             type: 'Breaking',
             author: 'Anonymous',
             content: 'This is a breaking news story about recent developments in technology...',
             likes: 15,
+            reports: [],
+            reportCount: 0,
             comments: [
                 { author: 'Jane Doe', content: 'This is very interesting!', timestamp: new Date() },
                 { author: 'Anonymous', content: 'Great coverage!', timestamp: new Date() }
@@ -39,11 +42,15 @@ let state = {
             showComments: false
         },
         {
+            id: 2,
+            title: 'The State of Privacy in Social Media',
             type: 'Opinion',
             author: 'John Doe',
             content: 'Here\'s my take on the current state of privacy in social media...',
             likes: 8,
-            comments: 3,
+            reports: [],
+            reportCount: 0,
+            comments: [],
             timestamp: new Date()
         }
     ],
@@ -73,15 +80,21 @@ function initializeIcons() {
 
 // Navigation
 function showPage(pageId) {
+    // Hide all pages and navbars
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
+    });
+    document.querySelectorAll('.navbar').forEach(nav => {
+        nav.classList.remove('active');
     });
     document.querySelectorAll('.nav-button').forEach(btn => {
         btn.classList.remove('active');
     });
     
+    // Show selected page and its navbar
     document.getElementById(pageId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    document.getElementById(pageId.replace('page', 'nav')).classList.add('active');
+    event.currentTarget?.classList.add('active');
     
     if (pageId === 'home-page') renderPosts();
     if (pageId === 'messages-page') renderChats();
@@ -192,11 +205,32 @@ function reportPost(postIndex) {
     const modal = document.getElementById('report-modal');
     modal.style.display = 'flex';
     modal.setAttribute('data-post-index', postIndex);
-    document.getElementById('source-links').innerHTML = `
-        <div class="source-link">
-            <input type="url" placeholder="Enter URL to contradicting evidence">
+    
+    // Update report count in tab
+    const post = state.posts[postIndex];
+    document.querySelector('.report-count').textContent = post.reports.length;
+    
+    // Render existing reports
+    const reportsList = document.querySelector('.reports-list');
+    reportsList.innerHTML = post.reports.map(report => `
+        <div class="report-item">
+            <div class="report-metadata">
+                <span class="report-author">${report.author}</span>
+                <span class="report-date">${report.date.toLocaleDateString()}</span>
+            </div>
+            <div class="report-sources">
+                ${report.sources.map(source => `
+                    <a href="${source}" target="_blank" rel="noopener noreferrer" class="source-link">
+                        Source
+                    </a>
+                `).join('')}
+            </div>
+            <p class="report-details">${report.details}</p>
         </div>
-    `;
+    `).join('') || '<p class="text-center text-secondary">No reports yet</p>';
+    
+    // Show the view reports tab by default
+    switchTab('view-reports');
 }
 
 function addSourceLink() {
@@ -215,15 +249,28 @@ function submitReport() {
     const links = Array.from(document.querySelectorAll('.source-link input')).map(input => input.value);
     const details = document.getElementById('report-details').value;
     
-    // In a real app, this would send to a backend
-    console.log('Report submitted:', {
-        postIndex,
-        links: links.filter(Boolean),
-        details
-    });
+    if (!links[0] && !details) {
+        showMessage('Please provide at least one source or explanation', true);
+        return;
+    }
+    
+    const newReport = {
+        author: state.user.name,
+        date: new Date(),
+        sources: links.filter(Boolean),
+        details: details
+    };
+    
+    if (!state.posts[postIndex].reports) {
+        state.posts[postIndex].reports = [];
+    }
+    
+    state.posts[postIndex].reports.push(newReport);
+    state.posts[postIndex].reportCount = state.posts[postIndex].reports.length;
     
     showMessage('Report submitted for review. Thank you for helping maintain accuracy!');
     closeReportModal();
+    renderPosts();
 }
 
 function closeReportModal() {
@@ -253,6 +300,78 @@ function signOut() {
     // In a real app, this would clear session data and redirect to login
 }
 
+function openPostModal(postIndex) {
+    const post = state.posts[postIndex];
+    const modal = document.getElementById('post-modal');
+    const modalContent = modal.querySelector('.post-modal-content');
+    
+    modalContent.innerHTML = `
+        <div class="post-card">
+            <div class="post-header">
+                <div class="post-type">
+                    ${getPostTypeIcon(post.type)}
+                    ${post.type} • ${post.author}
+                </div>
+                <button class="action-button report-button" onclick="event.stopPropagation(); reportPost(${postIndex})" title="Report Misinformation">
+                    ${ICONS['alert-triangle']}
+                    <span class="report-count">${post.reportCount}</span>
+                </button>
+            </div>
+            <div class="post-title">${post.title}</div>
+            ${post.imageUrl ? `
+                <div class="post-image">
+                    <img src="${post.imageUrl}" alt="Post image" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            ` : `
+                <div class="post-image">
+                    ${ICONS.image}
+                </div>
+            `}
+            <div class="post-content expanded">
+                ${post.content}
+            </div>
+            <div class="post-actions">
+                <button class="action-button ${post.liked ? 'liked' : ''}" onclick="event.stopPropagation(); handleLike(${postIndex})">
+                    <span class="heart-icon">${post.liked ? ICONS['heart-filled'] : ICONS.heart}</span>
+                    ${post.likes || 0}
+                </button>
+                <button class="action-button" onclick="event.stopPropagation(); toggleComments(${postIndex})">
+                    ${ICONS.comment}
+                    ${post.comments?.length || 0}
+                </button>
+                <button class="action-button" onclick="event.stopPropagation(); handleShare(${postIndex})">
+                    ${ICONS.share}
+                </button>
+            </div>
+            ${post.showComments ? `
+                <div class="comments-section">
+                    ${(post.comments || []).map(comment => `
+                        <div class="comment">
+                            <div class="comment-author">${comment.author}</div>
+                            <div class="comment-content">${comment.content}</div>
+                        </div>
+                    `).join('')}
+                    <div class="comment-input-container">
+                        <input type="text" 
+                            class="comment-input" 
+                            placeholder="Add a comment..."
+                            onkeypress="handleCommentInput(event, ${postIndex})">
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePostModal() {
+    const modal = document.getElementById('post-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
 function renderPosts(postsToRender = state.posts) {
     const feed = document.getElementById('feed');
     
@@ -265,16 +384,18 @@ function renderPosts(postsToRender = state.posts) {
         `;
     } else {
         feed.innerHTML = postsToRender.map((post, index) => `
-            <div class="post-card">
+            <div class="post-card" onclick="openPostModal(${index})">
                 <div class="post-header">
                     <div class="post-type">
                         ${getPostTypeIcon(post.type)}
                         ${post.type} • ${post.author}
                     </div>
-                    <button class="action-button report-button" onclick="reportPost(${index})" title="Report Misinformation">
+                    <button class="action-button report-button" onclick="event.stopPropagation(); reportPost(${index})" title="Report Misinformation">
                         ${ICONS['alert-triangle']}
+                        <span class="report-count">${post.reportCount}</span>
                     </button>
                 </div>
+                <div class="post-title">${post.title}</div>
                 ${post.imageUrl ? `
                     <div class="post-image">
                         <img src="${post.imageUrl}" alt="Post image" style="width: 100%; height: 100%; object-fit: cover;">
@@ -287,7 +408,7 @@ function renderPosts(postsToRender = state.posts) {
                 <div class="post-content">
                     ${post.content}
                 </div>
-                <div class="post-actions">
+                <div class="post-actions" onclick="event.stopPropagation()">
                     <button class="action-button ${post.liked ? 'liked' : ''}" onclick="handleLike(${index})">
                         <span class="heart-icon">${post.liked ? ICONS['heart-filled'] : ICONS.heart}</span>
                         ${post.likes || 0}
@@ -322,7 +443,20 @@ function renderPosts(postsToRender = state.posts) {
     initializeIcons();
 }
 
-// Add these new functions
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    document.getElementById(tabId).style.display = 'block';
+    document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+}
+
+
 function toggleComments(postIndex) {
     state.posts[postIndex].showComments = !state.posts[postIndex].showComments;
     renderPosts();
@@ -401,7 +535,14 @@ function handleShare(postIndex) {
 
 // Create Post
 function publishStory() {
+    const title = document.getElementById('story-title').value;
     const content = document.getElementById('story-content').value;
+    
+    if (!title.trim()) {
+        showMessage('Please enter a title for your story', true);
+        return;
+    }
+    
     if (!content.trim()) {
         showMessage('Please write some content for your story', true);
         return;
@@ -412,11 +553,15 @@ function publishStory() {
     const isBreaking = document.getElementById('breaking-toggle').checked;
     
     const newPost = {
+        id: state.posts.length + 1,
+        title: title,
         type: isBreaking ? 'Breaking' : isOpinion ? 'Opinion' : 'Story',
-        author: isAnonymous ? 'Anonymous' : 'User',
+        author: isAnonymous ? 'Anonymous' : state.user.name,
         content: content,
         timestamp: new Date(),
         likes: 0,
+        reports: [],
+        reportCount: 0,
         comments: [],
         imageUrl: document.querySelector('.image-upload img')?.src
     };
@@ -425,6 +570,7 @@ function publishStory() {
     showMessage('Story published successfully!');
     
     // Reset form
+    document.getElementById('story-title').value = '';
     document.getElementById('story-content').value = '';
     document.querySelector('.image-upload').innerHTML = `
         ${ICONS['image-plus']}
@@ -432,7 +578,6 @@ function publishStory() {
         <input type="file" id="image-upload" hidden accept="image/*">
     `;
     
-    // Navigate to home page
     showPage('home-page');
 }
 
@@ -505,6 +650,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('report-modal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeReportModal();
+        }
+    });
+
+    // Add modal click handler
+    document.getElementById('post-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePostModal();
         }
     });
 });
