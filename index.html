@@ -17,7 +17,10 @@
                     <span class="icon search-icon" data-icon="search"></span>
                     <input type="text" class="search-bar" placeholder="Search stories...">
                 </div>
-                <span class="icon" data-icon="user"></span>
+                <div class="nav-icons">
+                    <span style="cursor: pointer;" class="icon" data-icon="help-circle" onclick="showPage('faq-page')"></span>
+                    <span class="icon" data-icon="user"></span>
+                </div>
             </div>
         </div>
         
@@ -160,6 +163,94 @@
                 <button onclick="signOut()" class="sign-out-button" data-icon="log-out">
                     Sign Out
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="faq-page" class="page">
+        <div class="faq-content">
+            <div class="faq-section">
+                <h2>How to Use SecureNews</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What is SecureNews?</span>
+                        <span class="icon" data-icon="chevron-down"></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>SecureNews is an anonymous news-sharing platform focused on privacy and information accuracy. Users can share news stories while maintaining their anonymity, and the community helps verify information through a transparent reporting system. The platform uses secure tokens for authentication and emphasizes user privacy while maintaining content integrity.</p>
+                    </div>
+                </div>
+    
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I post a story?</span>
+                        <span class="icon" data-icon="chevron-down"></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To post a story:</p>
+                        <ol>
+                            <li>Click the "+" icon in the bottom navigation bar</li>
+                            <li>Add a cover image (optional) by clicking the image upload area</li>
+                            <li>Enter your story title and content</li>
+                            <li>Choose your post type:
+                                <ul>
+                                    <li>Toggle "Post Anonymously" to hide your identity</li>
+                                    <li>Toggle "Opinion Piece" for editorial content</li>
+                                    <li>Toggle "Breaking News" for urgent updates</li>
+                                </ul>
+                            </li>
+                            <li>Click the "Publish" button in the top right</li>
+                        </ol>
+                        <p>Your story will appear in the main feed immediately after posting.</p>
+                    </div>
+                </div>
+    
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I report misinformation?</span>
+                        <span class="icon" data-icon="chevron-down"></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To report potential misinformation:</p>
+                        <ol>
+                            <li>Find the warning triangle icon (⚠️) on any post</li>
+                            <li>Click it to open the reporting modal</li>
+                            <li>Switch to the "Report Misinformation" tab</li>
+                            <li>Add at least one source URL that contradicts the story</li>
+                            <li>Provide a detailed explanation of why you believe the information is incorrect</li>
+                            <li>Click "Submit Report"</li>
+                        </ol>
+                        <p>You can also view existing reports on a story by clicking the warning triangle and staying on the "View Reports" tab. The number next to the triangle shows how many reports the story has received.</p>
+                    </div>
+                </div>
+    
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I access and manage my profile?</span>
+                        <span class="icon" data-icon="chevron-down"></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To access your profile:</p>
+                        <ol>
+                            <li>Click the user icon in the top right corner</li>
+                            <li>View your profile information including:
+                                <ul>
+                                    <li>Display Name (which you can update)</li>
+                                    <li>Session Token (for current session security)</li>
+                                    <li>Account Token (for account verification)</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <p>Important Security Features:</p>
+                        <ul>
+                            <li>Use the eye icons to show/hide your tokens</li>
+                            <li>Keep your tokens private and secure</li>
+                            <li>You can update your display name while maintaining anonymity</li>
+                            <li>Use the "Sign Out" button to end your session securely</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

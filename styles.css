@@ -1068,3 +1068,117 @@ input:checked + .slider:before {
 .modal-close-button:hover {
     border-color: var(--text-primary);
 }
+
+/* FAQ Page Styles */
+.faq-content {
+    padding: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.faq-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.faq-section h2 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 16px;
+    background: var(--bg-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.faq-question:hover {
+    background: var(--card-bg);
+}
+
+.faq-question span:first-child {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.faq-question .icon {
+    transition: transform 0.2s;
+}
+
+.faq-question.active .icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-out;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+}
+
+.faq-answer.active {
+    padding: 16px;
+    max-height: 500px;
+}
+
+.nav-icons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+/* Add these to your existing FAQ styles */
+.faq-answer p {
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.faq-answer p:last-child {
+    margin-bottom: 0;
+}
+
+.faq-answer ol, 
+.faq-answer ul {
+    margin-bottom: 12px;
+    margin-left: 24px;
+}
+
+.faq-answer ol {
+    list-style-type: decimal;
+}
+
+.faq-answer ul {
+    list-style-type: disc;
+}
+
+.faq-answer li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.faq-answer li:last-child {
+    margin-bottom: 0;
+}
+
+.faq-answer li ul,
+.faq-answer li ol {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
